@@ -12,19 +12,19 @@ class Form extends Component {
     return (
       <div>
       	<span>First name:</span>
-      	<input type="text" value={this.props.firstName} 
+      	<input type="text" value={this.props.firstName}
       			onChange={(e) => this.props.updateFirstName(e.target.value)} />
 
         <span>Last name:</span>
-        <input type="text" value={this.props.lastName} 
+        <input type="text" value={this.props.lastName}
             onChange={(e) => this.props.updateLastName(e.target.value)} />
 
         <span>Date of birth:</span>
-        <input type="text" value={this.props.dob} 
+        <input type="text" value={this.props.dateOfBirth}
             onChange={(e) => this.props.updateDateOfBirth(e.target.value)} />
 
         <span>Date of passing:</span>
-        <input type="text" value={this.props.dod} 
+        <input type="text" value={this.props.dateOfPassing}
             onChange={(e) => this.props.updateDateOfPassing(e.target.value)} />
       </div>
     );
