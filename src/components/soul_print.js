@@ -10,7 +10,6 @@ const CIRCLE_COLOR = 'black';
 class SoulPrint extends Component {
 
   render() {
-    console.log(this.props.soulPrint);
     return (
       <svg width={CANVAS_SIZE} height={CANVAS_SIZE} version="1.1" 
           xmlns="http://www.w3.org/2000/svg">
@@ -22,10 +21,10 @@ class SoulPrint extends Component {
           Object.keys(this.props.soulPrint).map(soulSectionName => {
             let offset = this.props.soulPrint[soulSectionName].offset;
             return (
-              <line x1={CENTER} y1={CENTER} 
+              <line x1={CENTER} y1={CENTER}
                     x2={this.polarToCartesian(offset, RADIUS).x + RADIUS}
                     y2={this.polarToCartesian(offset, RADIUS).y + RADIUS}
-                    stroke="black" 
+                    stroke="black"
                     key={offset}
                     />
             );
@@ -36,7 +35,7 @@ class SoulPrint extends Component {
           Object.keys(this.props.soulPrint).map(soulSectionName => {
             let soulSection = this.props.soulPrint[soulSectionName];
 
-            return [...soulSection.value].map(character => {
+            return [...soulSection.value].map((character, idx) => {
               let offset = soulSection.valueType === "date" 
                            ? this.numberOffset : this.letterOffset;
 
@@ -44,7 +43,7 @@ class SoulPrint extends Component {
               let y = this.polarToCartesian(soulSection.offset + offset(character), RADIUS).y;
               return (
                 <line x1={CENTER} y1={CENTER} x2={x + RADIUS} y2={y + RADIUS}
-                      stroke="black" key={x + "" + y} />
+                      stroke="black" key={x + "" + y + "" + idx} />
               );
             })
           })
