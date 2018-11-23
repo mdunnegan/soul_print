@@ -30,13 +30,13 @@ export const initialState = {
 export default function(state = initialState, action) {
 	switch(action.type) {
 		case UPDATE_FIRST_NAME:
-			return { ...state, firstName: { ...state.firstName, value: action.payload.firstName }};
+			return { ...state, firstName: { ...state.firstName, value: action.payload.firstName.toLowerCase() }};
 		case UPDATE_LAST_NAME:
-			return { ...state, lastName: { ...state.lastName, value: action.payload.lastName }};
+			return { ...state, lastName: { ...state.lastName, value: action.payload.lastName.toLowerCase() }};
 		case UPDATE_DATE_OF_BIRTH:
-			return { ...state, dateOfBirth: { ...state.dateOfBirth, value: action.payload.dateOfBirth }};
+			return { ...state, dateOfBirth: { ...state.dateOfBirth, value: action.payload.dateOfBirth.toLowerCase() }};
 		case UPDATE_DATE_OF_PASSING:
-			return { ...state, dateOfPassing: { ...state.dateOfPassing, value: action.payload.dateOfPassing }};
+			return { ...state, dateOfPassing: { ...state.dateOfPassing, value: action.payload.dateOfPassing.toLowerCase() }};
 		default:
 			return state;
 	}
