@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-const CANVAS_SIZE = '500',
+const CANVAS_SIZE = '600',
       CENTER = CANVAS_SIZE / 2,
-      RADIUS = CANVAS_SIZE / 2;
+      RADIUS = CANVAS_SIZE / 2,
+      RADIUS_DIFFERENCE = 100,
+      CIRCLE_RADIUS = CANVAS_SIZE / 2 - RADIUS_DIFFERENCE;
 
 const CIRCLE_COLOR = 'black';
 
@@ -11,45 +13,53 @@ class SoulPrint extends Component {
 
   render() {
     return (
-      <svg width={CANVAS_SIZE} height={CANVAS_SIZE} version="1.1" 
-          xmlns="http://www.w3.org/2000/svg">
-        <circle cx={CENTER} cy={CENTER} r={RADIUS} stroke={CIRCLE_COLOR} 
-            fill="transparent" strokeWidth="1"/>
+      <div id="soulprint">
+        <svg width={CANVAS_SIZE} height={CANVAS_SIZE} version="1.1"
+            xmlns="http://www.w3.org/2000/svg">
+          <circle cx={CENTER} cy={CENTER} r={CIRCLE_RADIUS} stroke={CIRCLE_COLOR}
+              fill="transparent" strokeWidth="1"/>
 
-        {
-          // print region boundaries
-          Object.keys(this.props.soulPrint).map(soulSectionName => {
-            let offset = this.props.soulPrint[soulSectionName].offset;
-            return (
-              <line x1={CENTER} y1={CENTER}
-                    x2={this.polarToCartesian(offset, RADIUS).x + RADIUS}
-                    y2={this.polarToCartesian(offset, RADIUS).y + RADIUS}
-                    stroke="black"
-                    key={offset}
-                    />
-            );
-          })
-        }
-
-        {
-          Object.keys(this.props.soulPrint).map(soulSectionName => {
-            let soulSection = this.props.soulPrint[soulSectionName];
-
-            return [...soulSection.value].map((character, idx) => {
-              let offset = soulSection.valueType === "date" 
-                           ? this.numberOffset : this.letterOffset;
-
-              let x = this.polarToCartesian(soulSection.offset + offset(character), RADIUS).x;
-              let y = this.polarToCartesian(soulSection.offset + offset(character), RADIUS).y;
+          {
+            // print region boundaries
+            Object.keys(this.props.soulPrint).map(soulSectionName => {
+              let offset = this.props.soulPrint[soulSectionName].offset;
+              let cartesianCoords = this.polarToCartesian(offset, CIRCLE_RADIUS);
               return (
-                <line x1={CENTER} y1={CENTER} x2={x + RADIUS} y2={y + RADIUS}
-                      stroke="black" key={x + "" + y + "" + idx} />
+                <line x1={CENTER} y1={CENTER}
+                      x2={cartesianCoords.x + RADIUS}
+                      y2={cartesianCoords.y + RADIUS}
+                      stroke="black"
+                      key={offset}
+                      />
               );
             })
-          })
-        }
-      </svg>
+          }
+
+          {
+            Object.keys(this.props.soulPrint).map(soulSectionName => {
+              let soulSection = this.props.soulPrint[soulSectionName];
+
+              return [...soulSection.value].map((character, idx) => {
+                let offset = soulSection.valueType === "date"
+                             ? this.numberOffset : this.letterOffset;
+
+                let cartesianCoords = this.polarToCartesian(soulSection.offset + offset(character),
+                  CIRCLE_RADIUS + this.smallRandomInt())
+                return (
+                  <line x1={CENTER} y1={CENTER} x2={cartesianCoords.x + RADIUS} y2={cartesianCoords.y + RADIUS}
+                        stroke="black" key={cartesianCoords.x + "" + cartesianCoords.y + "" + idx} />
+                );
+              })
+            })
+          }
+        </svg>
+      </div>
+
     );
+  }
+
+  smallRandomInt() {
+    return Math.random() * RADIUS_DIFFERENCE;
   }
 
   toRadians(degrees) {
