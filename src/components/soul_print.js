@@ -21,24 +21,37 @@ class SoulPrint extends Component {
 
           {
             // print region boundaries
-            Object.keys(this.props.soulPrint).map(soulSectionName => {
-              let offset = this.props.soulPrint[soulSectionName].offset;
-              let cartesianCoords = this.polarToCartesian(offset, CIRCLE_RADIUS);
-              return (
-                <line x1={CENTER} y1={CENTER}
-                      x2={cartesianCoords.x + RADIUS}
-                      y2={cartesianCoords.y + RADIUS}
-                      stroke="black"
-                      key={offset}
-                      />
-              );
-            })
+            // Object.keys(this.props.soulPrint).map(soulSectionName => {
+            //   let offset = this.props.soulPrint[soulSectionName].offset;
+            //   let cartesianCoords = this.polarToCartesian(offset, CIRCLE_RADIUS);
+            //   return (
+            //     <line x1={CENTER} y1={CENTER}
+            //           x2={cartesianCoords.x + RADIUS}
+            //           y2={cartesianCoords.y + RADIUS}
+            //           stroke="black"
+            //           key={offset}
+            //           />
+            //   );
+            // })
           }
 
           {
             Object.keys(this.props.soulPrint).map(sectionName => {
               let soulSection = this.props.soulPrint[sectionName]; // one entry in the state object
-              return this.renderLinesAndDotsForSection(soulSection);
+              let coords = this.getCoordinates(soulSection);
+
+              return coords.map((coordinate, idx) => {
+                return (
+                  <g key={coordinate.x2 + "" + coordinate.x2 + "" + idx}>
+                    <line x1={coordinate.x1line} y1={coordinate.y1line}
+                          x2={coordinate.x2line} y2={coordinate.y2line}
+                          stroke={soulSection.lineColor} />
+                    <circle cx={coordinate.x2circle} cy={coordinate.y2circle} r={5} stroke={soulSection.circleColor}
+                            fill="transparent" strokeWidth="1"/>
+                  </g>
+                );
+              })
+
             })
           }
         </svg>
@@ -47,7 +60,7 @@ class SoulPrint extends Component {
     );
   }
 
-  renderLinesAndDotsForSection(soulSection) {
+  getCoordinates(soulSection) {
 
     let valueSliceFunction = soulSection.valueType === "date"
                    ? this.dateSliceFunction : this.letterSliceFunction;
@@ -56,11 +69,15 @@ class SoulPrint extends Component {
                    ? this.numberOffset : this.letterOffset;
 
     return valueSliceFunction(soulSection.value).map((section, idx) => {
-      let cartesianCoords = this.polarToCartesian(soulSection.offset + offsetFunction(section),
+      let lineCartesianCoords = this.polarToCartesian(soulSection.offset + offsetFunction(section),
           CIRCLE_RADIUS + this.smallRandomInt())
+      let circleCartesianCoords = this.polarToCartesian(soulSection.offset + offsetFunction(section),
+          CIRCLE_RADIUS)
       return (
-        <line x1={CENTER} y1={CENTER} x2={cartesianCoords.x + RADIUS} y2={cartesianCoords.y + RADIUS}
-              stroke="black" key={cartesianCoords.x + "" + cartesianCoords.y + "" + idx} />
+        {
+          x1line: CENTER, y1line: CENTER, x2line: lineCartesianCoords.x + RADIUS, y2line: lineCartesianCoords.y + RADIUS,
+          x1circle: CENTER, y1line: CENTER, x2circle: circleCartesianCoords.x + RADIUS, y2circle: circleCartesianCoords.y + RADIUS
+        }
       );
     })
   }
