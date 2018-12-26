@@ -36,26 +36,58 @@ class SoulPrint extends Component {
           }
 
           {
-            Object.keys(this.props.soulPrint).map(soulSectionName => {
-              let soulSection = this.props.soulPrint[soulSectionName];
-
-              return [...soulSection.value].map((character, idx) => {
-                let offset = soulSection.valueType === "date"
-                             ? this.numberOffset : this.letterOffset;
-
-                let cartesianCoords = this.polarToCartesian(soulSection.offset + offset(character),
-                  CIRCLE_RADIUS + this.smallRandomInt())
-                return (
-                  <line x1={CENTER} y1={CENTER} x2={cartesianCoords.x + RADIUS} y2={cartesianCoords.y + RADIUS}
-                        stroke="black" key={cartesianCoords.x + "" + cartesianCoords.y + "" + idx} />
-                );
-              })
+            Object.keys(this.props.soulPrint).map(sectionName => {
+              let soulSection = this.props.soulPrint[sectionName]; // one entry in the state object
+              return this.renderLinesAndDotsForSection(soulSection);
             })
           }
         </svg>
       </div>
 
     );
+  }
+
+  renderLinesAndDotsForSection(soulSection) {
+
+    let valueSliceFunction = soulSection.valueType === "date"
+                   ? this.dateSliceFunction : this.letterSliceFunction;
+
+    let offsetFunction = soulSection.valueType === "date"
+                   ? this.numberOffset : this.letterOffset;
+
+    return valueSliceFunction(soulSection.value).map((section, idx) => {
+      let cartesianCoords = this.polarToCartesian(soulSection.offset + offsetFunction(section),
+          CIRCLE_RADIUS + this.smallRandomInt())
+      return (
+        <line x1={CENTER} y1={CENTER} x2={cartesianCoords.x + RADIUS} y2={cartesianCoords.y + RADIUS}
+              stroke="black" key={cartesianCoords.x + "" + cartesianCoords.y + "" + idx} />
+      );
+    })
+  }
+
+  dateSliceFunction(dateStr) {
+    // turn a list of character into a list of list of characters of length 2
+    var result = [];
+    var temp = [];
+    var sectionSize = 2;
+    for (var i = 0; i < dateStr.length; i++) {
+      temp.push(dateStr[i]);
+      if (temp.length === sectionSize) {
+
+        let concatStr = "";
+        for (var j = 0; j < temp.length; j++) {
+          concatStr = concatStr + temp[j];
+        }
+
+        result.push(concatStr);
+        temp = [];
+      }
+    }
+    return result;
+  }
+
+  letterSliceFunction(str) {
+    return str.split("");
   }
 
   smallRandomInt() {
@@ -77,7 +109,7 @@ class SoulPrint extends Component {
   }
 
   numberOffset(number) {
-    return number * 10;
+    return parseInt(number);
   }
 }
 
